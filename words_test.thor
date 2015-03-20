@@ -1,6 +1,9 @@
 class WordsTest < Thor
   desc 'parse -f FILE', "Parses specified file (or input/dictionary.txt), and generates two output files: 'sequences.txt' and 'words.txt'."
   method_option :f, type: :string, aliases: 'f', default: 'input/dictionary.txt' # input file
+
+  # TODO: add tests
+  # TODO: add more error handling
   def parse
     file = options[:f]
     say "Defaulting to input file: #{file}"
@@ -27,6 +30,7 @@ class WordsTest < Thor
 
   private
 
+  # TODO: consider factoring out into a Module
   def process_file(file)
     output = {}
     dupes = []
@@ -34,32 +38,40 @@ class WordsTest < Thor
     File.readlines(file).each do |line|
       next if line.length < 4
 
-      line_words = []
-
-      for i in 0..line.length - 1
-        next if i + 1 > line.length - 4
-
-        sub_line = line[i..i+3]
-        line_words << sub_line if sub_line == sub_line[/[a-zA-Z]+/]
-        line_words.uniq!
-      end
-
-      line_words.each do |word|
-        if output.has_key?(word)
-          dupes << word
+      find_sequences(line).each do |sequence|
+        if output.has_key?(sequence)
+          dupes << sequence
           next
         else
-          output[word] = line
+          output[sequence] = line
         end
       end
     end
 
-    # clean up remaining dupes:
-    dupes.uniq!.each do |word|
-      output.delete word
+    final_output = clean_up_dupes(dupes, output)
+    create_files(final_output)
+  end
+
+  # creates a unique array of 4-char alpha strings for each line:
+  def find_sequences(line)
+    sequences = []
+
+    (0..(line.length - 1)).each do |i|
+      next if i + 1 > line.length - 4
+
+      sub_line = line[i..i+3]
+      sequences << sub_line if sub_line == sub_line[/[a-zA-Z]+/]
     end
 
-    create_files(output)
+    sequences.uniq
+  end
+
+  def clean_up_dupes(dupes, output)
+    dupes.uniq!.each do |sequence|
+      output.delete sequence
+    end
+
+    output
   end
 
   def create_files(output)
