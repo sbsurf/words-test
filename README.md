@@ -26,8 +26,8 @@ Running the Task
 thor hello_labs:parser:parse
 ```
 This assumes that:
-A) The input file **input/dictionary.txt** exists and is not empty
-B) There are no **output/sequences.txt** or **output/words.txt** files yet
+    * The input file **input/dictionary.txt** exists and is not empty
+    * There are no **output/sequences.txt** or **output/words.txt** files yet
 
 * Pass in task parameters in order to specify a different input file, to change the default output directory, or to force the script to overwrite existing output files.
 To see the expected parameters and their default values, run:
@@ -47,3 +47,7 @@ or simply:
 ```
 rspec
 ```
+
+*Note*: Some of the tests require the **spec/input/dictionary.txt** file (included) for testing the parsing logic. 
+Also, some files are created/deleted while the tests are executing. I decided using the actual file system, with very small files, 
+as opposed to creating files in memory using MockFS or FakeFS, in order to fully integration test the task.
