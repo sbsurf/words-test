@@ -5,6 +5,10 @@ This repository contains a Thor task which, given a dictionary, generates two ou
 * **sequences.txt** contains every sequence of four letters (A-z) that appears in exactly one word of the dictionary, one sequence per line.
 * **words.txt** contains the corresponding words that contain the sequences, in the same order, again one per line.
 
+Requirements
+------------
+* Ruby 2.2.0.
+
 The Set Up
 -----------
 
@@ -13,7 +17,10 @@ The Set Up
 git clone git@github.com:sbsurf/words-test.git
 ```
 
-* In the local **words-test** directory, you can run
+* *cd* into the newly-created **words-test** directory, and install the gems by running ```bundle install``` or simply ```bundle```.
+You may want to create and use a new gemset before installing the gems.
+
+* Still in the app directory, you can run
 ```
 thor list
 ```
