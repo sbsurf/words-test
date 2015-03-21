@@ -1,10 +1,12 @@
-== README
+README
+======
 
 This repository contains a Thor task which, given a dictionary, generates two output files, 'sequences.txt' and 'words.txt'.
 * **sequences.txt** contains every sequence of four letters (A-z) that appears in exactly one word of the dictionary, one sequence per line.
 * **words.txt** contains the corresponding words that contain the sequences, in the same order, again one per line.
 
 The Set Up
+-----------
 
 * Clone this repository:
 ```
@@ -20,6 +22,7 @@ to see the list of Thor tasks. You should see the **hello_labs:parser:parse** ta
 * Before running the task, create the dictionary **input** file, or download it from http://bit.ly/1jveLkY
 
 Running the Task
+-----------------
 
 * The easiest way to run the task is with default options:
 ```
@@ -38,6 +41,7 @@ thor help hello_labs:parser:parse
 * For more information on Thor, visit https://github.com/erikhuda/thor/wiki.
 
 Running the Tests
+------------------
 
 * To run the test suite, simply use the Rspec command:
 ```
