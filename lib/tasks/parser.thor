@@ -21,11 +21,11 @@ module HelloLabs
         return
       end
 
-      if File.file?(file)
+      if File.file?(file) || !File.zero?(file)
         say 'Generating output files. Please wait...', :green
         process_file(file, options[:output_dir])
       else
-        say 'Input file not found. Operation canceled.', :yellow
+        say 'Input file not found or is empty. Operation canceled.', :yellow
         return
       end
 

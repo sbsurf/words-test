@@ -1,7 +1,5 @@
 module WordsTest
   def process_file(file, output_dir)
-    puts output_dir
-
     output = {}
     dupes = []
 
@@ -37,16 +35,16 @@ module WordsTest
   end
 
   def clean_up_dupes(dupes, output)
-    dupes.uniq!.each do |sequence|
-      output.delete sequence
+    unless dupes.empty?
+      dupes.uniq.each do |sequence|
+        output.delete sequence
+      end
     end
 
     output
   end
 
   def create_files(output, dir)
-    puts dir
-
     words = File.new("#{dir}/words.txt", 'w')
     sequences = File.new("#{dir}/sequences.txt", 'w')
 
@@ -60,8 +58,6 @@ module WordsTest
   end
 
   def output_files_exist?(dir)
-    puts dir
-
     File.file?("#{dir}/sequences.txt") || File.file?("#{dir}/words.txt") ? true : false
   end
 end
