@@ -3,6 +3,10 @@
 Metrics/LineLength:
   Max: 121
 
+Metrics/MethodLength:
+  CountComments: false  # count full line comments?
+  Max: 20
+
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/BlockComments:
