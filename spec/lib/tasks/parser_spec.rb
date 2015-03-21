@@ -4,6 +4,7 @@ load file_path('lib/tasks/parser.thor')
 
 RSpec.describe HelloLabs::Parser do
   let(:dictionary) { file_path('spec/input/dictionary.txt') }
+  let(:dictionary_temp) { file_path('spec/input/dictionary_temp.txt') }
   let(:words) { file_path('spec/output/words.txt') }
   let(:sequences) { file_path('spec/output/sequences.txt') }
 
@@ -11,7 +12,6 @@ RSpec.describe HelloLabs::Parser do
 
   before do
     subject.options = {}
-    subject.options[:input_file] = dictionary
     subject.options[:output_dir] = file_path('spec/output')
   end
 
@@ -22,44 +22,92 @@ RSpec.describe HelloLabs::Parser do
         File.delete sequences if File.file?(sequences)
       end
 
-      context 'with no output files present' do
-        before do
-          subject.parse
+      context 'input' do
+        context 'specified input file exists' do
+          before do
+            subject.options[:input_file] = dictionary_temp
+            File.open(dictionary_temp, 'w') {}
+          end
+
+          after do
+            File.delete dictionary_temp if File.file?(dictionary_temp)
+          end
+
+          it 'does not continue if input file empty' do
+            subject.parse
+
+            expect(File.file?(words)).to equal false
+            expect(File.file?(sequences)).to equal false
+          end
+
+          it 'continues if input file not empty' do
+            File.write(dictionary_temp, 'teststring')
+            subject.parse
+
+            expect(File.file?(words)).to equal true
+            expect(File.file?(sequences)).to equal true
+          end
         end
 
-        it 'creates files' do
-          expect(File.exist?(words)).to equal true
-          expect(File.exist?(sequences)).to equal true
+        context 'specified input file does not exist' do
+          before do
+            subject.options[:input_file] = dictionary_temp
+          end
+
+          it 'does not continue' do
+            subject.parse
+
+            expect(File.file?(words)).to equal false
+            expect(File.file?(sequences)).to equal false
+          end
         end
       end
 
-      context 'with existing output files' do
+      context 'output' do
         before do
-          File.open(words, 'w') {}
-          File.open(sequences, 'w') {}
+          subject.options[:input_file] = dictionary
         end
 
-        it 'overwrites files with --f flag' do
-          subject.options[:overwrite] = true
-          subject.parse
+        context 'with no output files present' do
+          before do
+            subject.parse
+          end
 
-          # file content should not be empty anymore:
-          expect(File.size?(words)).to be_truthy
-          expect(File.size?(sequences)).to be_truthy
+          it 'creates files' do
+            expect(File.file?(words)).to equal true
+            expect(File.file?(sequences)).to equal true
+          end
         end
 
-        it 'cancels without --f flag' do
-          subject.parse
+        context 'with existing output files' do
+          before do
+            File.open(words, 'w') {}
+            File.open(sequences, 'w') {}
+          end
 
-          # file content should still be empty:
-          expect(File.size?(words)).to_not be_truthy
-          expect(File.size?(sequences)).to_not be_truthy
+          it 'overwrites files with --f flag' do
+            subject.options[:overwrite] = true
+            subject.parse
+
+            # file content should not be empty anymore:
+            expect(File.size?(words)).to be_truthy
+            expect(File.size?(sequences)).to be_truthy
+          end
+
+          it 'cancels without --f flag' do
+            subject.parse
+
+            # file content should still be empty:
+            expect(File.size?(words)).to_not be_truthy
+            expect(File.size?(sequences)).to_not be_truthy
+          end
         end
       end
     end
 
     context 'file content' do
       before do
+        subject.options[:input_file] = dictionary
         subject.options[:overwrite] = true
         subject.parse
       end

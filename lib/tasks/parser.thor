@@ -6,12 +6,11 @@ module HelloLabs
   class Parser < Thor
     include WordsTest
 
-    desc 'parse -f FILE', "Parses specified file (or input/dictionary.txt), and generates two output files: 'sequences.txt' and 'words.txt'."
+    desc 'parse -i input_file -o output_dir -f overwrite ', "Parses specified file (or input/dictionary.txt), and generates two output files: 'sequences.txt' and 'words.txt'."
     method_option :input_file, type: :string, aliases: 'i', default: 'input/dictionary.txt' # input file
     method_option :output_dir, type: :string, aliases: 'o', default: 'output' # input file
-    method_option :overwrite, type: :string, aliases: 'f', default: false # overwrites existing output files
+    method_option :overwrite, type: :string, aliases: 'f', default: 'no' # overwrites existing output files
 
-    # TODO: add more error handling
     def parse
       file = options[:input_file]
       say "Using input file: #{file}"
@@ -21,7 +20,7 @@ module HelloLabs
         return
       end
 
-      if File.file?(file) || !File.zero?(file)
+      if File.file?(file) && !File.zero?(file)
         say 'Generating output files. Please wait...', :green
         process_file(file, options[:output_dir])
       else
