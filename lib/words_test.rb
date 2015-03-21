@@ -1,4 +1,6 @@
+# Logic for parsing the dictionary file and generating the 'sequences' and 'words' files
 module WordsTest
+  # Scans the input file and creates output files
   def process_file(file, output_dir)
     output = {}
     dupes = []
@@ -20,7 +22,7 @@ module WordsTest
     create_files(final_output, output_dir)
   end
 
-  # creates a unique array of 4-char alpha strings for each line:
+  # Creates a unique array of 4-char alpha strings for each line:
   def find_sequences(line)
     sequences = []
 
@@ -34,6 +36,7 @@ module WordsTest
     sequences.uniq
   end
 
+  # Removes remaining duplicates from the output
   def clean_up_dupes(dupes, output)
     unless dupes.empty?
       dupes.uniq.each do |sequence|
@@ -44,6 +47,7 @@ module WordsTest
     output
   end
 
+  # Scans the output and concurrently creates the 'sequences' and 'words' files
   def create_files(output, dir)
     words = File.new("#{dir}/words.txt", 'w')
     sequences = File.new("#{dir}/sequences.txt", 'w')
@@ -57,6 +61,7 @@ module WordsTest
     words.close
   end
 
+  # Checks if either of the output files already exists
   def output_files_exist?(dir)
     File.file?("#{dir}/sequences.txt") || File.file?("#{dir}/words.txt") ? true : false
   end
