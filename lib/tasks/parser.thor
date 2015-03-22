@@ -13,24 +13,26 @@ module HelloLabs
 
     def parse
       file = options[:input_file]
+      output_dir = options[:output_dir]
+
       say "Using input file: #{file}"
 
-      if output_files_exist?(options[:output_dir]) && !options[:overwrite].to_b
+      if output_files_exist?(output_dir) && !options[:overwrite].to_b
         say 'Output files exist. Set the -f option to overwrite. Operation canceled.', :yellow
         return
       end
 
       if File.file?(file) && !File.zero?(file)
         say 'Generating output files. Please wait...', :green
-        process_file(file, options[:output_dir])
+        process_file(file, output_dir)
       else
         say 'Input file not found or is empty. Operation canceled.', :yellow
         return
       end
 
       say 'Operation succeeded. The following 2 files were generated:', :green
-      say 'output/sequences.txt'
-      say 'output/words.txt'
+      say "#{output_dir}/sequences.txt"
+      say "#{output_dir}/words.txt"
     end
   end
 end

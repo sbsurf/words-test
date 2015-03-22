@@ -1,3 +1,5 @@
+require 'fileutils'
+
 # Logic for parsing the dictionary file and generating the 'sequences' and 'words' files
 module WordsTest
   # Scans the input file and creates output files
@@ -49,6 +51,8 @@ module WordsTest
 
   # Scans the output and concurrently creates the 'sequences' and 'words' files
   def create_files(output, dir)
+    FileUtils.mkdir_p(dir) # create directory if doesn't exist
+
     words = File.new("#{dir}/words.txt", 'w')
     sequences = File.new("#{dir}/sequences.txt", 'w')
 
