@@ -6,6 +6,7 @@ load file_path('lib/tasks/parser.thor')
 RSpec.describe HelloLabs::Parser do
   let(:dictionary) { file_path('spec/input/dictionary.txt') }
   let(:dictionary_temp) { file_path('spec/input/dictionary_temp.txt') }
+  let(:dictionary_mock) { file_path('spec/input/dictionary_mock.txt') }
   let(:words) { file_path('spec/output/words.txt') }
   let(:words_mock) { file_path('spec/output_mock/words.txt') }
   let(:sequences) { file_path('spec/output/sequences.txt') }
@@ -29,41 +30,52 @@ RSpec.describe HelloLabs::Parser do
 
       context 'input' do
         context 'specified input file exists' do
-          before do
-            subject.options[:input_file] = dictionary_temp
-            File.open(dictionary_temp, 'w') {}
+          context 'input file is empty' do
+            before do
+              allow(File).to receive(:file?).with(dictionary_mock).and_return(true)
+              allow(File).to receive(:zero?).with(dictionary_mock).and_return(true)
+              expect(File).not_to receive(:new).with(words, 'w')
+              expect(File).not_to receive(:new).with(sequences, 'w')
+              mock_output_files_do_not_exist
+
+              subject.options[:input_file] = dictionary_mock
+            end
+
+            it 'does not continue if input file empty' do
+              subject.parse
+            end
           end
 
-          after do
-            File.delete dictionary_temp if File.file?(dictionary_temp)
-          end
+          context 'input file is not empty' do
+            before do
+              mock_output_file_creation(true, false)
+              subject.options[:input_file] = dictionary_temp
 
-          it 'does not continue if input file empty' do
-            subject.parse
+              File.open(dictionary_temp, 'w') {}
+              File.write(dictionary_temp, 'teststring')
+            end
 
-            expect(File.file?(words)).to equal false
-            expect(File.file?(sequences)).to equal false
-          end
+            after do
+              File.delete(dictionary_temp)
+            end
 
-          it 'continues if input file not empty' do
-            File.write(dictionary_temp, 'teststring')
-            subject.parse
-
-            expect(File.file?(words)).to equal true
-            expect(File.file?(sequences)).to equal true
+            it 'continues if input file not empty' do
+              subject.parse
+            end
           end
         end
 
         context 'specified input file does not exist' do
           before do
-            subject.options[:input_file] = dictionary_temp
+            allow(File).to receive(:file?).with(dictionary_mock).and_return(false)
+            allow(File).to receive(:file?).with(words).and_return(false)
+            allow(File).to receive(:file?).with(sequences).and_return(false)
+            subject.options[:input_file] = dictionary_mock
           end
 
           it 'does not continue' do
+            mock_output_files_do_not_exist
             subject.parse
-
-            expect(File.file?(words)).to equal false
-            expect(File.file?(sequences)).to equal false
           end
         end
       end
@@ -75,7 +87,7 @@ RSpec.describe HelloLabs::Parser do
 
         context 'with no output files present' do
           before do
-            mock_file_creation(true, false)
+            mock_output_file_creation(true, false)
           end
 
           it 'creates files' do
@@ -109,7 +121,7 @@ RSpec.describe HelloLabs::Parser do
 
         context 'when non-existing output directory is specified' do
           before do
-            mock_file_creation(false, true)
+            mock_output_file_creation(false, true)
             subject.options[:output_dir] = output_dir_mock
           end
 
@@ -172,24 +184,36 @@ RSpec.describe HelloLabs::Parser do
     end
   end
 
-  def mock_file_creation(expect_files=false, mock_output_dir=false)
-    wrds = mock_output_dir ? words_mock : words
-    seqs = mock_output_dir ? sequences_mock : sequences
+  def mock_output_files_do_not_exist
+    allow(File).to receive(:file?).with(words).and_return(false)
+    allow(File).to receive(:file?).with(sequences).and_return(false)
+  end
 
+  def mock_output_file_methods
     new_file_sequences = instance_double 'File'
     new_file_words = instance_double 'File'
 
-    if expect_files
+    allow(new_file_sequences).to receive(:puts)
+    allow(new_file_words).to receive(:puts)
+    allow(new_file_sequences).to receive(:close)
+    allow(new_file_words).to receive(:close)
+
+    {sequences: new_file_sequences, words: new_file_words}
+  end
+
+  def mock_output_file_creation(expect_file_creation=false, mock_output_dir=false)
+    wrds = mock_output_dir ? words_mock : words
+    seqs = mock_output_dir ? sequences_mock : sequences
+
+    new_file_words = mock_output_file_methods[:words]
+    new_file_sequences = mock_output_file_methods[:sequences]
+
+    if expect_file_creation
       expect(File).to receive(:new).with(wrds, 'w').and_return(new_file_words)
       expect(File).to receive(:new).with(seqs, 'w').and_return(new_file_sequences)
     else
       allow(File).to receive(:new).with(wrds, 'w').and_return(new_file_words)
       allow(File).to receive(:new).with(seqs, 'w').and_return(new_file_sequences)
     end
-
-    allow(new_file_sequences).to receive(:puts)
-    allow(new_file_words).to receive(:puts)
-    allow(new_file_sequences).to receive(:close)
-    allow(new_file_words).to receive(:close)
   end
 end

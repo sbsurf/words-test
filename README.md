@@ -58,7 +58,3 @@ or simply:
 ```
 rspec
 ```
-
-*Note*: Some of the tests require the **spec/input/dictionary.txt** file (included) for testing the parsing logic. 
-Also, some files are created/deleted while the tests are executing. I decided using the actual file system, with very small files, 
-as opposed to creating files in memory using MockFS or FakeFS, in order to fully integration test the task.
