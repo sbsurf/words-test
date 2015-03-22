@@ -7,13 +7,17 @@ RSpec.describe HelloLabs::Parser do
   let(:dictionary) { file_path('spec/input/dictionary.txt') }
   let(:dictionary_temp) { file_path('spec/input/dictionary_temp.txt') }
   let(:words) { file_path('spec/output/words.txt') }
+  let(:words_mock) { file_path('spec/output_mock/words.txt') }
   let(:sequences) { file_path('spec/output/sequences.txt') }
+  let(:sequences_mock) { file_path('spec/output_mock/sequences.txt') }
+  let(:output_dir) { file_path('spec/output') }
+  let(:output_dir_mock) { file_path('spec/output_mock') }
 
   subject { described_class.new }
 
   before do
     subject.options = {}
-    subject.options[:output_dir] = file_path('spec/output')
+    subject.options[:output_dir] = output_dir
   end
 
   describe '#parse' do
@@ -106,16 +110,21 @@ RSpec.describe HelloLabs::Parser do
 
         context 'when non-existing output directory is specified' do
           before do
-            subject.options[:output_dir] = file_path('spec/output_temp')
-            subject.parse
-          end
+            new_file_sequences = instance_double 'File'
+            new_file_words = instance_double 'File'
+            allow(File).to receive(:new).with(words_mock, 'w').and_return(new_file_words)
+            allow(File).to receive(:new).with(sequences_mock, 'w').and_return(new_file_sequences)
+            allow(new_file_sequences).to receive(:puts)
+            allow(new_file_words).to receive(:puts)
+            allow(new_file_sequences).to receive(:close)
+            allow(new_file_words).to receive(:close)
 
-          after do
-            FileUtils.remove_dir('spec/output_temp')
+            subject.options[:output_dir] = output_dir_mock
           end
 
           it 'creates directory' do
-            expect(Dir.exists?('spec/output_temp')).to equal true
+            expect(FileUtils).to receive(:mkdir_p).with(output_dir_mock)
+            subject.parse
           end
         end
       end
