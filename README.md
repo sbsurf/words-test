@@ -58,3 +58,8 @@ or simply:
 ```
 rspec
 ```
+
+* The tests use mocking where it makes sense, and cover:
+  * File creation logic
+  * Option switch logic
+  * Dictionary parsing algorithm. The file found at **spec/input/dictionary.txt**, which contains various test cases, is used for this purpose.
