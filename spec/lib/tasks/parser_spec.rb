@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'thor'
+require 'fileutils'
 load file_path('lib/tasks/parser.thor')
 
 RSpec.describe HelloLabs::Parser do
@@ -102,6 +103,21 @@ RSpec.describe HelloLabs::Parser do
             expect(File.size?(sequences)).to_not be_truthy
           end
         end
+
+        context 'when non-existing output directory is specified' do
+          before do
+            subject.options[:output_dir] = file_path('spec/output_temp')
+            subject.parse
+          end
+
+          after do
+            FileUtils.remove_dir('spec/output_temp')
+          end
+
+          it 'creates directory' do
+            expect(Dir.exists?('spec/output_temp')).to equal true
+          end
+        end
       end
     end
 
@@ -135,7 +151,7 @@ RSpec.describe HelloLabs::Parser do
         expect(seqs).to include("Conn\n")
       end
 
-      it 'it distinguishes between upper and lower case' do
+      it 'distinguishes between upper and lower case' do
         seqs = File.readlines(sequences)
         expect(seqs).to include("Aaro\n")
         expect(seqs).to include("aaro\n")
