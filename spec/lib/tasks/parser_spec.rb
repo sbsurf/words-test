@@ -34,23 +34,21 @@ RSpec.describe HelloLabs::Parser do
             before do
               allow(File).to receive(:file?).with(dictionary_mock).and_return(true)
               allow(File).to receive(:zero?).with(dictionary_mock).and_return(true)
-              expect(File).not_to receive(:new).with(words, 'w')
-              expect(File).not_to receive(:new).with(sequences, 'w')
               mock_output_files_do_not_exist
 
               subject.options[:input_file] = dictionary_mock
             end
 
             it 'does not continue if input file empty' do
+              expect(File).not_to receive(:new).with(words, 'w')
+              expect(File).not_to receive(:new).with(sequences, 'w')
               subject.parse
             end
           end
 
           context 'input file is not empty' do
             before do
-              mock_output_file_creation(true, false)
               subject.options[:input_file] = dictionary_temp
-
               File.open(dictionary_temp, 'w') {}
               File.write(dictionary_temp, 'teststring')
             end
@@ -60,6 +58,7 @@ RSpec.describe HelloLabs::Parser do
             end
 
             it 'continues if input file not empty' do
+              mock_output_file_creation(true, false) # expect output files to be created
               subject.parse
             end
           end
@@ -74,7 +73,8 @@ RSpec.describe HelloLabs::Parser do
           end
 
           it 'does not continue' do
-            mock_output_files_do_not_exist
+            expect(File).not_to receive(:new).with(words)
+            expect(File).not_to receive(:new).with(sequences)
             subject.parse
           end
         end
