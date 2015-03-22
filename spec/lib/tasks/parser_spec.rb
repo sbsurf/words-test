@@ -21,13 +21,13 @@ RSpec.describe HelloLabs::Parser do
     subject.options[:output_dir] = output_dir
   end
 
+  after do
+    File.delete words if File.file?(words)
+    File.delete sequences if File.file?(sequences)
+  end
+
   describe '#parse' do
     context 'file creation and options(flags)' do
-      before do
-        File.delete words if File.file?(words)
-        File.delete sequences if File.file?(sequences)
-      end
-
       context 'input' do
         context 'specified input file exists' do
           context 'input file is empty' do
