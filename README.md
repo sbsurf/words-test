@@ -35,9 +35,9 @@ Running the Task
 ```
 thor hello_labs:parser:parse
 ```
-This assumes that:
-    * The input file **input/dictionary.txt** exists and is not empty
-    * There are no **output/sequences.txt** or **output/words.txt** files yet
+  * This assumes that:
+    * The input file **input/dictionary.txt** exists and is not empty.
+    * There are no **output/sequences.txt** or **output/words.txt** files yet.
 
 * Pass in task parameters in order to specify a different input file, to change the default output directory, or to force the script to overwrite existing output files.
 To see the expected parameters and their default values, run:
