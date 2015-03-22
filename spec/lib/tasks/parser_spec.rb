@@ -75,12 +75,11 @@ RSpec.describe HelloLabs::Parser do
 
         context 'with no output files present' do
           before do
-            subject.parse
+            mock_file_creation(true, false)
           end
 
           it 'creates files' do
-            expect(File.file?(words)).to equal true
-            expect(File.file?(sequences)).to equal true
+            subject.parse
           end
         end
 
@@ -110,15 +109,7 @@ RSpec.describe HelloLabs::Parser do
 
         context 'when non-existing output directory is specified' do
           before do
-            new_file_sequences = instance_double 'File'
-            new_file_words = instance_double 'File'
-            allow(File).to receive(:new).with(words_mock, 'w').and_return(new_file_words)
-            allow(File).to receive(:new).with(sequences_mock, 'w').and_return(new_file_sequences)
-            allow(new_file_sequences).to receive(:puts)
-            allow(new_file_words).to receive(:puts)
-            allow(new_file_sequences).to receive(:close)
-            allow(new_file_words).to receive(:close)
-
+            mock_file_creation(false, true)
             subject.options[:output_dir] = output_dir_mock
           end
 
@@ -179,5 +170,26 @@ RSpec.describe HelloLabs::Parser do
         end
       end
     end
+  end
+
+  def mock_file_creation(expect_files=false, mock_output_dir=false)
+    wrds = mock_output_dir ? words_mock : words
+    seqs = mock_output_dir ? sequences_mock : sequences
+
+    new_file_sequences = instance_double 'File'
+    new_file_words = instance_double 'File'
+
+    if expect_files
+      expect(File).to receive(:new).with(wrds, 'w').and_return(new_file_words)
+      expect(File).to receive(:new).with(seqs, 'w').and_return(new_file_sequences)
+    else
+      allow(File).to receive(:new).with(wrds, 'w').and_return(new_file_words)
+      allow(File).to receive(:new).with(seqs, 'w').and_return(new_file_sequences)
+    end
+
+    allow(new_file_sequences).to receive(:puts)
+    allow(new_file_words).to receive(:puts)
+    allow(new_file_sequences).to receive(:close)
+    allow(new_file_words).to receive(:close)
   end
 end
