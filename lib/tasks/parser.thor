@@ -11,6 +11,9 @@ module HelloLabs
     method_option :output_dir, type: :string, aliases: 'o', default: 'output' # input file
     method_option :overwrite, type: :string, aliases: 'f', default: 'no' # overwrites existing output files
 
+    # The main public method for kicking off the parsing.
+    # See the +WordsTest+ module for more logic.
+    #
     def parse
       file = options[:input_file]
       output_dir = options[:output_dir]

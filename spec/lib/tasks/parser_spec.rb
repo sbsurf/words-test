@@ -198,15 +198,20 @@ RSpec.describe HelloLabs::Parser do
     allow(new_file_sequences).to receive(:close)
     allow(new_file_words).to receive(:close)
 
-    {sequences: new_file_sequences, words: new_file_words}
+    { sequences: new_file_sequences, words: new_file_words }
   end
 
-  def mock_output_file_creation(expect_file_creation=false, mock_output_dir=false)
+  # Mock output file creation when actual file creation is not necessary
+  # Set +expect_file_creation+ to <code>true</code> when you want to ensure file creation gets called
+  # Set +mock_output_dir+ to <code>true</code> when you want to use a non-default/non-existent output directory
+  #
+  def mock_output_file_creation(expect_file_creation = false, mock_output_dir = false)
     wrds = mock_output_dir ? words_mock : words
     seqs = mock_output_dir ? sequences_mock : sequences
 
-    new_file_words = mock_output_file_methods[:words]
-    new_file_sequences = mock_output_file_methods[:sequences]
+    mocked_output_files = mock_output_file_methods
+    new_file_words = mocked_output_files[:words]
+    new_file_sequences = mocked_output_files[:sequences]
 
     if expect_file_creation
       expect(File).to receive(:new).with(wrds, 'w').and_return(new_file_words)
