@@ -21,7 +21,7 @@ module HelloLabs
       say "Using input file: #{file}"
 
       if output_files_exist?(output_dir) && !options[:overwrite].to_b
-        say 'Output files exist. Set the -f option to overwrite. Operation canceled.', :yellow
+        say 'Output files exist. Set the -f option to true to overwrite. Operation canceled.', :yellow
         return
       end
 
